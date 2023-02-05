@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h1>Lista Progetti</h1>
+    <h1>Tabella Progetti:</h1>
     @include('commons.message')
     <table class="table table-dark table-striped">
         <thead>

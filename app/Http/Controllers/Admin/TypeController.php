@@ -1,9 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreTypeRequest;
+use App\Http\Requests\UpdateTypeRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App\Models\Type;
 
 class TypeController extends Controller
@@ -15,7 +18,9 @@ class TypeController extends Controller
      */
     public function index()
     {
-        //
+        $types = Type::all();
+
+        return view('admin.types.index', compact('types'));
     }
 
     /**
@@ -24,19 +29,27 @@ class TypeController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create()
-    {
-        //
+    {   
+        $types = Type::all();
+        return view('admin.types.create', compact('types'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\StoreTypeRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreTypeRequest $request)
     {
-        //
+       $data = $request->validated();
+
+       $new_type = new Type();
+       $new_type->fill($data);
+       $new_type->slug = Str::slug($new_type->complexity);
+       $new_type->save();
+
+       return redirect()->route('admin.types.index')->with('message', "La Tipologia $new_type->complexity è stata creata con successo!");
     }
 
     /**
@@ -45,9 +58,9 @@ class TypeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
-        //
+    public function show(Type $type)
+    {   
+        return view('admin.types.show', compact('type'));
     }
 
     /**
@@ -56,21 +69,29 @@ class TypeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Type $type)
     {
-        //
+        return view('admin.types.edit', compact('type'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Http\Requests\UpdateTypeRequest $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateTypeRequest $request, Type $type)
     {
-        //
+        $data = $request->validated();
+
+        $old_complexity = $type->complexity;
+
+        $type->slug = Str::slug($data['complexity']);
+
+        $type->update($data);
+
+        return redirect()->route('admin.types.index')->with('message', "La tipologia: $old_complexity, è stata aggiornata!");
     }
 
     /**
@@ -79,8 +100,10 @@ class TypeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Type $type)
     {
-        //
+        $type->delete();
+
+        return redirect()->route('admin.types.index')->with('message', "La tipologia: $type->complexity, è stato cancellato con successo!");
     }
 }
