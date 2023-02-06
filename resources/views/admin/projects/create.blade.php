@@ -35,7 +35,7 @@
                 </select>
             </div>
             <div class="mb-3">
-                <p>Tecnologia\e utilizzate: </p>
+                <p>Tecnologia\e da utilizzare: </p>
                 @foreach ($technologies as $technology )    
                 <div class="form-check form-check-inline">
                     <input class="form-check-input" type="checkbox" id="{{$technology->slug}}" value="{{$technology->id}}" name="technologies[]" {{in_array( $technology->id, old('technologies', [])) ? 'checked' : ''}}>
